@@ -1,5 +1,5 @@
 {
-	"name": "termodoro-front",
+	"name": "termodoro",
 	"version": "0.0.0",
 	"license": "MIT",
 	"bin": "dist/cli.js",
@@ -17,7 +17,6 @@
 	],
 	"dependencies": {
 		"@inkjs/ui": "^1.0.0",
-		"dayjs": "^1.11.8",
 		"ink": "^4.1.0",
 		"ink-big-text": "^2.0.0",
 		"meow": "^11.0.0",
@@ -25,6 +24,7 @@
 	},
 	"devDependencies": {
 		"@sindresorhus/tsconfig": "^3.0.1",
+		"@types/node": "^20.3.1",
 		"@types/react": "^18.0.32",
 		"@vdemedes/prettier-config": "^2.0.1",
 		"ava": "^5.2.0",
