@@ -27,4 +27,8 @@ $ termodoro
 
 ## Todo
 
-plan next features
+- add correct timing instead of debug size
+- start timers paused
+- increase volume of audio
+- fix audio issue (audio file need to be in dist, that's awful)
+- do some refactoring
