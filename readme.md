@@ -32,3 +32,5 @@ $ termodoro
 - increase volume of audio
 - fix audio issue (audio file need to be in dist, that's awful)
 - do some refactoring
+- fix readme to have some images and etc
+- it works on windows
