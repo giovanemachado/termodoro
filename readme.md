@@ -10,6 +10,7 @@ Run this one folder above, calling the actual termodoro folder
 
 ```bash
 $ npm install --global termodoro
+$ npm install --global ./termodoro
 ```
 
 ## Dev
@@ -27,10 +28,10 @@ $ termodoro
 
 ## Todo
 
-- add correct timing instead of debug size
 - start timers paused
 - increase volume of audio
 - fix audio issue (audio file need to be in dist, that's awful)
 - do some refactoring
 - fix readme to have some images and etc
 - it works on windows
+  - afplay just exists on mac :l

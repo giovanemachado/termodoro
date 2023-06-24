@@ -6,22 +6,21 @@ import {exec} from 'child_process';
 import path, {dirname} from 'path';
 import {fileURLToPath} from 'url';
 
+enum Phases {
+	POMODORO,
+	SHORTREST,
+	REST,
+}
+
+const configs = {
+	pomodoro: 1500, // 25 min
+	shortRest: 300, // 5 min
+	rest: 900, // 15 min
+	roundsToRest: 4,
+};
+
 export default function App() {
 	const {exit} = useApp();
-
-	enum Phases {
-		POMODORO,
-		SHORTREST,
-		REST,
-	}
-
-	const configs = {
-		pomodoro: 15,
-		shortRest: 3,
-		rest: 9,
-		roundsToRest: 2,
-	};
-
 	const [seconds, setSeconds] = useState(0);
 	const [currentSecondsTarget, setCurrentSecondsTarget] = useState(
 		configs.pomodoro,
@@ -34,8 +33,95 @@ export default function App() {
 	const [showConfirmReset, setShowConfirmReset] = useState(false);
 	const [isPaused, setIsPaused] = useState(false);
 
+	// Actions
+	useInput(input => {
+		switch (input) {
+			case 'p':
+				pause();
+				break;
+			case 's':
+				skip();
+				break;
+			case 'r':
+				setShowConfirmReset(true);
+				break;
+			case 'q':
+				setShowConfirmQuit(true);
+				break;
+		}
+	});
+
+	const skip = () => {
+		goToNextPhase();
+	};
+
+	const pause = () => {
+		setIsPaused(!isPaused);
+	};
+
+	const reset = () => {
+		setPhase(Phases.POMODORO);
+		setSeconds(0);
+		setCurrentSecondsTarget(configs.pomodoro);
+		setRounds(0);
+	};
+
+	const onConfirmQuit = () => {
+		exit();
+		setShowConfirmQuit(false);
+	};
+
+	const onConfirmReset = () => {
+		reset();
+		setShowConfirmReset(false);
+	};
+
+	const onCancel = () => {
+		setShowConfirmQuit(false);
+	};
+
+	// Start phases
+	const goToNextPhase = () => {
+		playSound();
+		switch (phase) {
+			case Phases.POMODORO:
+				if (rounds > configs.roundsToRest) {
+					startRestPhase();
+					break;
+				}
+
+				startShortRestPhase();
+				break;
+			case Phases.REST:
+			case Phases.SHORTREST:
+				startPomodoroPhase();
+				break;
+		}
+	};
+
+	const startShortRestPhase = () => {
+		setPhase(Phases.SHORTREST);
+		setSeconds(0);
+		setCurrentSecondsTarget(configs.shortRest);
+		setRounds(prevRounds => prevRounds + 1);
+	};
+
+	const startRestPhase = () => {
+		setPhase(Phases.REST);
+		setSeconds(0);
+		setCurrentSecondsTarget(configs.rest);
+		setRounds(prevRounds => prevRounds + 1);
+	};
+
+	const startPomodoroPhase = () => {
+		setPhase(Phases.POMODORO);
+		setSeconds(0);
+		setCurrentSecondsTarget(configs.pomodoro);
+	};
+
+	// Timer
 	useEffect(() => {
-		let interval: any;
+		let interval: NodeJS.Timer | undefined = undefined;
 
 		if (isPaused) {
 			clearInterval(interval);
@@ -65,6 +151,7 @@ export default function App() {
 		setTimerText(minutesText + ':' + extraSecondsText);
 	}, [seconds]);
 
+	// Colors
 	useEffect(() => {
 		setColor(
 			phase === Phases.POMODORO
@@ -75,38 +162,7 @@ export default function App() {
 		);
 	}, [phase]);
 
-	const goToNextPhase = () => {
-		playSound();
-		switch (phase) {
-			case Phases.POMODORO:
-				if (rounds > configs.roundsToRest) {
-					// go to rest
-					setPhase(Phases.REST);
-					setSeconds(0);
-					setCurrentSecondsTarget(configs.rest);
-					setRounds(prevRounds => prevRounds + 1);
-					break;
-				} else {
-					// go to short restc
-					setPhase(Phases.SHORTREST);
-					setSeconds(0);
-					setCurrentSecondsTarget(configs.shortRest);
-					setRounds(prevRounds => prevRounds + 1);
-				}
-				break;
-			case Phases.REST:
-				setPhase(Phases.POMODORO);
-				setSeconds(0);
-				setCurrentSecondsTarget(configs.pomodoro);
-				break;
-			case Phases.SHORTREST:
-				setPhase(Phases.POMODORO);
-				setSeconds(0);
-				setCurrentSecondsTarget(configs.pomodoro);
-				break;
-		}
-	};
-
+	// Util
 	const playSound = () => {
 		let absolutePath = path.join(
 			dirname(fileURLToPath(import.meta.url)),
@@ -120,51 +176,6 @@ export default function App() {
 				console.log(`exec error: ${error}`);
 			}
 		});
-	};
-	const skip = () => {
-		goToNextPhase();
-	};
-
-	useInput(input => {
-		switch (input) {
-			case 'p':
-				pause();
-				break;
-			case 's':
-				skip();
-				break;
-			case 'r':
-				setShowConfirmReset(true);
-				break;
-			case 'q':
-				setShowConfirmQuit(true);
-				break;
-		}
-	});
-
-	const pause = () => {
-		setIsPaused(!isPaused);
-	};
-
-	const reset = () => {
-		setPhase(Phases.POMODORO);
-		setSeconds(0);
-		setCurrentSecondsTarget(configs.pomodoro);
-		setRounds(0);
-	};
-
-	const onConfirmQuit = () => {
-		exit();
-		setShowConfirmQuit(false);
-	};
-
-	const onConfirmReset = () => {
-		reset();
-		setShowConfirmReset(false);
-	};
-
-	const onCancel = () => {
-		setShowConfirmQuit(false);
 	};
 
 	return (
