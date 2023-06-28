@@ -7,9 +7,9 @@ It needs `npm` and `node => v16`.
 
 ## Install
 
-1 - Download this folder
-2 - Run the command `npm install --global ./termodoro` one folder above the folder
-3 - Now you can use `termodoro` to work with.
+1. Download this folder
+2. Run the command `npm install --global ./termodoro` one folder above the folder
+3. Now you can use `termodoro` to work with.
 
 ## Dev
 You can run the commands to have your installation working in real time, so you can do updates on the code.
