@@ -15,6 +15,7 @@ It needs `npm` and `node => v16`.
 You can run the commands to have your installation working in real time, so you can do updates on the code.
 
 ```
+yarn
 yarn build
 yarn dev
 ```
