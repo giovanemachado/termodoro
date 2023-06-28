@@ -16,7 +16,7 @@ const configs = {
 	pomodoro: 1500, // 25 min
 	shortRest: 300, // 5 min
 	rest: 900, // 15 min
-	roundsToRest: 4,
+	roundsToRest: 3,
 };
 
 export default function App() {
@@ -26,12 +26,14 @@ export default function App() {
 		configs.pomodoro,
 	);
 	const [timerText, setTimerText] = useState('00:00');
+	const [totalRounds, setTotalRounds] = useState(1);
 	const [rounds, setRounds] = useState(1);
 	const [phase, setPhase] = useState(Phases.POMODORO);
+	const [phaseText, setPhaseText] = useState('pomodoro');
 	const [color, setColor] = useState('green');
 	const [showConfirmQuit, setShowConfirmQuit] = useState(false);
 	const [showConfirmReset, setShowConfirmReset] = useState(false);
-	const [isPaused, setIsPaused] = useState(false);
+	const [isPaused, setIsPaused] = useState(true);
 
 	// Actions
 	useInput(input => {
@@ -63,7 +65,7 @@ export default function App() {
 		setPhase(Phases.POMODORO);
 		setSeconds(0);
 		setCurrentSecondsTarget(configs.pomodoro);
-		setRounds(0);
+		setTotalRounds(0);
 	};
 
 	const onConfirmQuit = () => {
@@ -83,17 +85,21 @@ export default function App() {
 	// Start phases
 	const goToNextPhase = () => {
 		playSound();
+		setIsPaused(true);
 		switch (phase) {
 			case Phases.POMODORO:
 				if (rounds > configs.roundsToRest) {
+					setPhaseText('rest');
 					startRestPhase();
 					break;
 				}
 
 				startShortRestPhase();
+				setPhaseText('short rest');
 				break;
 			case Phases.REST:
 			case Phases.SHORTREST:
+				setPhaseText('pomodoro');
 				startPomodoroPhase();
 				break;
 		}
@@ -103,6 +109,7 @@ export default function App() {
 		setPhase(Phases.SHORTREST);
 		setSeconds(0);
 		setCurrentSecondsTarget(configs.shortRest);
+		setTotalRounds(prevRounds => prevRounds + 1);
 		setRounds(prevRounds => prevRounds + 1);
 	};
 
@@ -110,7 +117,8 @@ export default function App() {
 		setPhase(Phases.REST);
 		setSeconds(0);
 		setCurrentSecondsTarget(configs.rest);
-		setRounds(prevRounds => prevRounds + 1);
+		setTotalRounds(prevRounds => prevRounds + 1);
+		setRounds(1);
 	};
 
 	const startPomodoroPhase = () => {
@@ -182,13 +190,14 @@ export default function App() {
 		<Box flexDirection="column">
 			<Box flexDirection="column">
 				<BigText font="3d" colors={[color]} text={timerText} />
-				<Text>rounds: {rounds}</Text>
+				<Text>rounds: {totalRounds}</Text>
+				<Text>current phase: {phaseText}</Text>
 				{isPaused ? <Text color={'red'}>paused</Text> : <Text> </Text>}
 			</Box>
 			<Text>commands:</Text>
 			<UnorderedList>
 				<UnorderedList.Item>
-					<Text>p - pause</Text>
+					<Text>p - {isPaused ? 'play' : 'pause'}</Text>
 				</UnorderedList.Item>
 				<UnorderedList.Item>
 					<Text>r - reset</Text>
