@@ -1,5 +1,7 @@
 # termodoro
-![Screen Shot 2023-06-28 at 18 21 54](https://github.com/giovanemachado/termodoro/assets/33123137/90badcc6-5b20-45f9-a7db-3571e0eef04f)
+
+https://github.com/giovanemachado/termodoro/assets/33123137/78dd9243-011d-4c1b-9b46-bfb111f37cd3
+
 
 Termodoro is a react app running on terminal that creates a pomodoro with traditional timings (25 min working, 5 min resting).
 ## Dependencies
